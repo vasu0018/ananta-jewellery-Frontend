@@ -1,0 +1,42 @@
+{
+  "name": "ananta-jewellery-storefront",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ananta Jewellery — customer storefront (Next.js 16 + Tailwind 4 + TanStack Query)",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "node scripts/next-port.mjs dev 3005",
+    "build": "next build",
+    "start": "node scripts/next-port.mjs start 3005",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "node scripts/fix-lucide-types.mjs"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.90.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.25.0",
+    "next": "16.4.1",
+    "radix-ui": "^1.4.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.1.12",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
