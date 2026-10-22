@@ -6,6 +6,7 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { BadgeCheck, Camera, ImagePlus, Loader2, MessageSquareQuote, Star, ThumbsUp, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { PointerSelect } from "@/components/ui/PointerSelect";
 import { Img } from "@/components/ui/Img";
 import { Sheet } from "@/components/ui/sheet";
 import { Skeleton, Stars } from "@/components/ui/misc";
@@ -240,12 +241,12 @@ export function Reviews({ productId, slug, summary }: { productId: string; slug:
                   {rating} star <X className="size-3.5" />
                 </button>
               )}
-              <select value={sort} onChange={(e) => setSort(e.target.value)} className="field ml-auto !h-9 !w-auto !rounded-full !py-0 !text-[13px]" aria-label="Sort reviews">
-                <option value="recent">Most recent</option>
-                <option value="helpful">Most helpful</option>
-                <option value="highest">Highest rated</option>
-                <option value="lowest">Lowest rated</option>
-              </select>
+            <PointerSelect value={sort} onChange={(e) => setSort(e.target.value)} className="field ml-auto !h-9 !w-auto !rounded-full !py-0 !text-[13px]" aria-label="Sort reviews">
+              <option value="recent">Most recent</option>
+              <option value="helpful">Most helpful</option>
+              <option value="highest">Highest rated</option>
+              <option value="lowest">Lowest rated</option>
+            </PointerSelect>
             </div>
           )}
 

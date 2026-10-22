@@ -62,7 +62,7 @@ function TypesPanel({ item, onNavigate }: { item: TopNavItem; onNavigate: () => 
               onMouseEnter={() => setCurrent(t.label)}
               onFocus={() => setCurrent(t.label)}
               onClick={onNavigate}
-              className={cn("flex items-center justify-between px-5 py-2.5 text-[15px] transition", t.label === active?.label ? "bg-blush/60 font-bold text-ink" : "text-[#121212bf] hover:text-ink")}
+              className={cn("flex items-center justify-between px-5 py-2.5 text-[15px] transition-colors", t.label === active?.label ? "bg-blush/60 font-bold text-ink" : "text-[#121212bf] hover:bg-[#ffe8ee] hover:text-ink")}
             >
               {t.label} <ChevronRight className="size-4 opacity-60" />
             </Link>
@@ -77,7 +77,7 @@ function TypesPanel({ item, onNavigate }: { item: TopNavItem; onNavigate: () => 
               <ul className="space-y-1.5">
                 {col.links.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} onClick={onNavigate} className="text-[14px] text-[#121212a6] transition hover:text-rose">
+                    <Link href={l.href} onClick={onNavigate} className="-mx-2 block rounded-[6px] px-2 py-1 text-[14px] text-[#121212a6] transition-colors hover:bg-[#ffe8ee] hover:text-ink">
                       {l.label}
                     </Link>
                   </li>
@@ -129,7 +129,7 @@ export function Header() {
 
   return (
     <header className={cn("sticky top-0 z-40 bg-white transition-shadow", scrolled && "shadow-[0_4px_14px_-8px_rgb(18_18_18/0.25)]")}>
-      <div className="container-x flex h-[62px] items-center gap-2 lg:h-[81px] lg:gap-[22px] lg:px-[76px] lg:pt-3">
+      <div className="container-x flex h-[62px] items-center gap-2 lg:h-[81px] lg:gap-[22px] lg:pt-3">
         <button type="button" onClick={() => setMenuOpen(true)} className="-ml-1 grid size-10 place-items-center text-ink lg:hidden" aria-label="Open menu">
           <Menu className="size-6" />
         </button>
@@ -174,7 +174,7 @@ export function Header() {
 
       {/* Desktop text navigation with dropdowns */}
       <nav className="hidden lg:block" aria-label="Main">
-        <ul className="container-x flex flex-wrap items-center lg:px-[76px]">
+        <ul className="container-x flex flex-wrap items-center">
           {topNav.map((item) => {
             const hasMenu = !!(item.links?.length || item.types?.length);
             const open = active === item.label;
@@ -207,7 +207,7 @@ export function Header() {
                       <ul className="min-w-[220px] py-2">
                         {item.links!.map((l) => (
                           <li key={l.href}>
-                            <Link href={l.href} onClick={() => setActive(null)} className="block whitespace-nowrap px-5 py-2 text-[14.5px] text-[#121212bf] transition hover:bg-blush/50 hover:text-ink">
+                            <Link href={l.href} onClick={() => setActive(null)} className="mx-1.5 block whitespace-nowrap rounded-[6px] px-3.5 py-2 text-[14.5px] text-[#121212bf] transition-colors hover:bg-[#ffe8ee] hover:text-ink">
                               {l.label}
                             </Link>
                           </li>

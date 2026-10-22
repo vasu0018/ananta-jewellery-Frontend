@@ -5,8 +5,10 @@ import { CheckCircle2 } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Field, FormError, SelectField, TextareaField } from "./Field";
+import { PhoneField } from "./PhoneField";
 import { api } from "@/lib/api";
 import { ApiError, errorMessage } from "@/lib/api-error";
+import { splitPhone, storedPhoneError, toStoredPhone } from "@/lib/phone";
 import { emailSchema, validate, type FieldErrors } from "@/lib/validation";
 import { useAuth } from "@/stores/auth";
 
@@ -18,8 +20,12 @@ const schema = z.object({
   phone: z
     .string()
     .trim()
-    .max(20)
-    .refine((v) => !v || /^[6-9]\d{9}$/.test(v), "Enter a valid 10-digit mobile number"),
+    .max(24)
+    .superRefine((value, ctx) => {
+      if (!value) return;
+      const message = storedPhoneError(value);
+      if (message) ctx.addIssue({ code: "custom", message });
+    }),
   subject: z.string().max(120),
   message: z.string().trim().min(10, "Tell us a little more (at least 10 characters)").max(3000),
 });
@@ -32,6 +38,7 @@ export function ContactForm({ orderNumber }: { orderNumber?: string }) {
 }
 
 function ContactFormInner({ customer, orderNumber }: { customer: Customer; orderNumber?: string }) {
+  const [phoneIso, setPhoneIso] = useState(() => splitPhone(customer?.phone).iso);
   const [form, setForm] = useState({
     name: customer?.name ?? "",
     email: customer?.email ?? "",
@@ -87,17 +94,18 @@ function ContactFormInner({ customer, orderNumber }: { customer: Customer; order
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Your name" autoComplete="name" value={form.name} onChange={(e) => set("name", e.target.value)} error={errors.name} />
         <Field label="Email" type="email" autoComplete="email" value={form.email} onChange={(e) => set("email", e.target.value)} error={errors.email} />
-        <Field
+        <PhoneField
           label={
             <>
               Mobile <span className="font-normal text-muted">(optional)</span>
             </>
           }
-          type="tel"
-          inputMode="numeric"
-          autoComplete="tel-national"
-          value={form.phone}
-          onChange={(e) => set("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
+          iso={phoneIso}
+          national={form.phone ? splitPhone(form.phone).national : ""}
+          onChange={({ iso, national }) => {
+            setPhoneIso(iso);
+            set("phone", national ? toStoredPhone(iso, national) : "");
+          }}
           error={errors.phone}
         />
         <SelectField label="Topic" value={form.topic} onChange={(e) => set("topic", e.target.value)}>

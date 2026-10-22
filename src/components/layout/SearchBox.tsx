@@ -208,7 +208,7 @@ export function SearchBox({ variant = "inline", autoFocus, onNavigate }: { varia
                             setOpen(variant === "panel");
                             onNavigate?.();
                           }}
-                          className="flex items-center gap-3 py-2.5 transition hover:opacity-80"
+                          className="-mx-2 flex items-center gap-3 rounded-[8px] px-2 py-2.5 transition-colors hover:bg-[#ffe8ee]"
                         >
                           <div className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-cream">
                             <Img src={p.image} alt={p.name} fill sizes="56px" className="object-cover" />

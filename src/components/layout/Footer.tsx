@@ -67,7 +67,7 @@ export function Footer({ settings, categories, collections }: { settings: Public
 
   return (
     <footer className="mt-12 bg-[#f0f0f0] text-ink">
-      <div className="container-x grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1.4fr] xl:px-[120px] 2xl:px-[170px]">
+      <div className="container-x grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.2fr_1.4fr]">
         <Column
           title="Quick links"
           links={[
@@ -147,7 +147,7 @@ export function Footer({ settings, categories, collections }: { settings: Public
       </div>
 
       <div className="border-t border-[#dedede]">
-        <div className="container-x space-y-1 py-6 xl:px-[120px] 2xl:px-[170px]">
+        <div className="container-x space-y-1 py-6">
           <p className="mb-2 text-[18px] font-bold">Popular Searches</p>
           <SearchRow title="Jewellery" links={typeLinks} />
           <SearchRow title="Shop by Colour" links={col("COLOUR")} />

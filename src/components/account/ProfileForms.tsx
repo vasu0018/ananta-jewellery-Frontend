@@ -5,9 +5,11 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormError, PasswordField, SelectField } from "@/components/forms/Field";
+import { PhoneField } from "@/components/forms/PhoneField";
 import { AccountHeading } from "./AccountShell";
 import { api } from "@/lib/api";
 import { ApiError, errorMessage } from "@/lib/api-error";
+import { splitPhone, toStoredPhone } from "@/lib/phone";
 import { passwordSchema, phoneSchema, validate, type FieldErrors } from "@/lib/validation";
 import { useAuth } from "@/stores/auth";
 import type { Customer } from "@/lib/types";
@@ -40,6 +42,7 @@ export function ProfileView() {
 function ProfileForm() {
   const customer = useAuth((s) => s.customer)!;
   const setCustomer = useAuth((s) => s.setCustomer);
+  const [phoneIso, setPhoneIso] = useState(() => splitPhone(customer.phone).iso);
   const [form, setForm] = useState({
     name: customer.name,
     phone: customer.phone ?? "",
@@ -86,13 +89,13 @@ function ProfileForm() {
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Full name" autoComplete="name" value={form.name} onChange={(e) => set("name", e.target.value)} error={errors.name} />
           <Field label="Email" value={customer.email} readOnly disabled hint="Contact us to change your email" />
-          <Field
-            label="Mobile number"
-            type="tel"
-            inputMode="numeric"
-            autoComplete="tel-national"
-            value={form.phone}
-            onChange={(e) => set("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
+          <PhoneField
+            iso={phoneIso}
+            national={form.phone ? splitPhone(form.phone).national : ""}
+            onChange={({ iso, national }) => {
+              setPhoneIso(iso);
+              set("phone", national ? toStoredPhone(iso, national) : "");
+            }}
             error={errors.phone}
           />
           <SelectField label="Gender" value={form.gender} onChange={(e) => set("gender", e.target.value)}>

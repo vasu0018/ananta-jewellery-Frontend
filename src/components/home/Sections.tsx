@@ -26,36 +26,6 @@ export function ViewMore({ href, label = "View More" }: { href: string; label?: 
   );
 }
 
-const STORES = [
-  { label: "Silver Jewellery", href: "/" },
-  { label: "Gold Jewellery", href: "/shop?colour=Gold" },
-  { label: "Lab-Grown Diamonds", href: "/collections/lab-grown-diamonds" },
-];
-
-/** Segmented store switcher under the header; the home page is the silver store. */
-export function StoreSwitcher() {
-  return (
-    <div className="container-x flex justify-center pb-3 pt-1">
-      <div className="w-full max-w-[713px] rounded-[20px] bg-[linear-gradient(90deg,#e1bf7c_0%,#dbd295_52.4%,#b57e10_100%)] p-px">
-        <div className="grid grid-cols-3 rounded-[20px] bg-white">
-          {STORES.map((s, i) => (
-            <Link
-              key={s.label}
-              href={s.href}
-              className={cn(
-                "flex h-[33px] items-center justify-center whitespace-nowrap rounded-[20px] px-1 text-[11px] transition sm:text-[14.4px] sm:tracking-[0.6px]",
-                i === 0 ? "bg-maroon-grad text-white" : "text-[#25282b] hover:text-rose-dark",
-              )}
-            >
-              {s.label}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function offerTile(o: Offer): { top: string; big: string; bottom: string; label: string } | null {
   if (o.type === "BUY_X_GET_Y") {
     const m = /BUY(\d+)GET(\d+)/i.exec(o.code);
@@ -321,7 +291,7 @@ export function WorldOf({ storeName, collections }: { storeName: string; collect
         </div>
         <Scroller
           arrowClassName="size-9 text-ink-soft"
-          trackClassName="grid grid-flow-col grid-rows-2 auto-cols-[44%] gap-x-3 gap-y-3 sm:auto-cols-[30%] sm:gap-x-5 sm:gap-y-5 lg:auto-cols-[calc((100%-96px)/4)] lg:gap-x-8 lg:justify-center-safe"
+          trackClassName="grid grid-flow-col grid-rows-2 auto-cols-[44%] gap-x-3 gap-y-3 sm:auto-cols-[30%] sm:gap-x-5 sm:gap-y-5 lg:auto-cols-[calc((100%-96px)/4)] lg:gap-x-8"
         >
           {collections.map((c) => (
             <Link
@@ -454,7 +424,7 @@ export function OfferHeader({
   return (
     <div
       className={cn(
-        "relative mx-auto mb-6 max-w-[1190px] rounded-[10px] px-4 py-4 text-center sm:mb-8 sm:py-6",
+        "relative mb-6 rounded-[10px] px-4 py-4 text-center sm:mb-8 sm:py-6",
         right && "py-6 sm:py-9 lg:py-11",
         dark ? "bg-[linear-gradient(90deg,#5c1027_0%,#8c2241_50%,#5c1027_100%)] text-white" : "bg-[linear-gradient(90deg,#fde3e8_0%,#fff5f7_50%,#fde3e8_100%)] text-rose-dark",
       )}
@@ -484,37 +454,63 @@ export function OfferHeader({
   );
 }
 
-/** "New Launch": peach band with a header row and one tile per category that has new arrivals. */
+function LaunchSide({ product }: { product: ProductCard }) {
+  return (
+    <Link href={`/products/${product.slug}`} className="group relative hidden h-full min-h-[220px] overflow-hidden rounded-[18px] bg-white shadow-[0_10px_24px_-16px_rgb(120_40_60/0.7)] xl:block">
+      <Img src={product.image} alt={product.name} fill sizes="240px" className="object-cover transition duration-700 group-hover:scale-105" />
+      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent px-3 pb-3 pt-14 text-[13px] font-semibold leading-snug text-white">
+        {product.name}
+      </span>
+    </Link>
+  );
+}
+
+function usablePhoto(src: string | null | undefined) {
+  return !!src && !/example\.com/i.test(src);
+}
+
+/** "New Launch": peach band, category tiles in the middle, a product photo on each side. */
 export function NewLaunch({ products }: { products: ProductCard[] }) {
   const seen = new Set<string>();
-  const tiles = products.filter((p) => p.category && !seen.has(p.category.slug) && seen.add(p.category.slug));
+  const tiles = products.filter((p) => {
+    if (!p.category || seen.has(p.category.slug) || !usablePhoto(p.image)) return false;
+    seen.add(p.category.slug);
+    return true;
+  });
   if (!tiles.length) return null;
+  const photos = products.filter((p) => usablePhoto(p.image));
+  const left = photos[0];
+  const right = photos.length > 1 ? photos[photos.length - 1] : null;
   const maxOff = Math.max(0, ...products.map((p) => p.discountPct ?? 0));
   return (
-    <section className="my-6 bg-[linear-gradient(180deg,#f8e6de_0%,#fbeee9_100%)] py-5 sm:my-8 sm:py-6">
-      <div className="container-x">
-        <div className="mb-4 flex items-center justify-center gap-4 sm:mb-5 sm:gap-6">
-          <h2 className="font-serif text-[30px] font-bold uppercase leading-none tracking-[0.02em] text-rose-dark sm:text-[44px]">New Launch</h2>
-          <div className="text-left">
-            {maxOff > 0 && <p className="text-[13px] font-bold text-ink sm:text-[17px]">Upto {maxOff}% Off</p>}
-            <Link href="/shop?newArrival=1&sort=newest" className="mt-0.5 inline-flex h-6 items-center rounded-full bg-[#c96a7f] px-4 text-[12px] font-bold text-white sm:h-7 sm:text-[13px]">
-              Explore
-            </Link>
+    <section className="my-6 bg-[linear-gradient(180deg,#f8e6de_0%,#fbeee9_100%)] sm:my-8">
+      <div className={cn("container-x grid items-stretch gap-5 py-5 sm:py-6", left && right && "xl:grid-cols-[200px_minmax(0,1fr)_200px] xl:gap-6")}>
+        {left && right && <LaunchSide product={left} />}
+        <div className="flex min-w-0 flex-col justify-center">
+          <div className="mb-4 flex items-center justify-center gap-4 sm:mb-5 sm:gap-6">
+            <h2 className="font-serif text-[30px] font-bold uppercase leading-none tracking-[0.02em] text-rose-dark sm:text-[44px]">New Launch</h2>
+            <div className="text-left">
+              {maxOff > 0 && <p className="text-[13px] font-bold text-ink sm:text-[17px]">Upto {maxOff}% Off</p>}
+              <Link href="/shop?newArrival=1&sort=newest" className="mt-0.5 inline-flex h-6 items-center rounded-full bg-[#c96a7f] px-4 text-[12px] font-bold text-white sm:h-7 sm:text-[13px]">
+                Explore
+              </Link>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-5 xl:grid-cols-9">
+            {tiles.map((p) => (
+              <Link key={p.category!.slug} href={`/category/${p.category!.slug}?newArrival=1`} className="group min-w-0">
+                <span className="relative block aspect-square overflow-hidden rounded-[14px] bg-white">
+                  <Img src={p.image} alt={p.category!.name} fill sizes="140px" className="object-cover transition duration-500 group-hover:scale-105" />
+                  <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-full bg-[#e9718b] px-1.5 py-px text-[10px] font-bold text-white">
+                    <Sparkles className="size-2.5 fill-current" /> New
+                  </span>
+                </span>
+                <span className="mt-1.5 block text-balance text-center text-[12px] leading-tight text-ink 2xl:text-[14px]">{p.category!.name}</span>
+              </Link>
+            ))}
           </div>
         </div>
-        <Scroller trackClassName="gap-3 sm:gap-4 lg:justify-center-safe">
-          {tiles.map((p) => (
-            <Link key={p.category!.slug} href={`/category/${p.category!.slug}?newArrival=1`} className="group w-[90px] shrink-0 snap-start sm:w-[118px]">
-              <span className="relative block aspect-square overflow-hidden rounded-[14px] bg-white">
-                <Img src={p.image} alt={p.category!.name} fill sizes="118px" className="object-cover transition duration-500 group-hover:scale-105" />
-                <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-full bg-[#e9718b] px-1.5 py-px text-[10px] font-bold text-white">
-                  <Sparkles className="size-2.5 fill-current" /> New
-                </span>
-              </span>
-              <span className="mt-1.5 block text-center text-[13px] text-ink sm:text-[15px]">{p.category!.name}</span>
-            </Link>
-          ))}
-        </Scroller>
+        {left && right && <LaunchSide product={right} />}
       </div>
     </section>
   );
@@ -533,7 +529,7 @@ export function ColourCards({ collections, products }: { collections: Collection
   return (
     <section className="container-x py-8 sm:py-10">
       <Title>Shop by Colour</Title>
-      <div className="mx-auto grid max-w-[1290px] grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-10">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-6 lg:grid-cols-4 lg:gap-x-10">
         {collections.map((c) => {
           const p = products.find((x) => x.colour === c.name);
           const label = METAL_CHIP[c.name] ?? c.name;
@@ -566,18 +562,18 @@ export function BondPortraits({ collections }: { collections: Collection[] }) {
   return (
     <section className="container-x py-8 sm:py-10">
       <Title>Shop by Bond</Title>
-      <Scroller trackClassName="gap-3 sm:gap-4 lg:justify-center-safe">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,150px),1fr))] gap-3 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] sm:gap-4">
         {collections.map((c) => (
-          <Link key={c.id} href={`/collections/${c.slug}`} className="group relative block w-[40%] shrink-0 snap-start overflow-hidden rounded-[12px] bg-[#ffd3dc] sm:w-[24%] lg:w-[207px]">
+          <Link key={c.id} href={`/collections/${c.slug}`} className="group relative block overflow-hidden rounded-[12px] bg-[#ffd3dc]">
             <span className="relative block aspect-[6/7] overflow-hidden">
-              <Img src={c.image} alt={c.name} fill sizes="(min-width: 1024px) 207px, 40vw" className="object-cover transition duration-700 group-hover:scale-105" />
+              <Img src={c.image} alt={c.name} fill sizes="(min-width: 1024px) 20vw, 50vw" className="object-cover transition duration-700 group-hover:scale-105" />
             </span>
             <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#e58aa1] via-[#e58aa1]/80 to-transparent pb-2 pt-8 text-center text-[15px] font-bold text-white sm:text-[17px]">
               {c.name}
             </span>
           </Link>
         ))}
-      </Scroller>
+      </div>
     </section>
   );
 }

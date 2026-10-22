@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Field, SelectField } from "./Field";
+import { PhoneField } from "./PhoneField";
 import { INDIAN_STATES } from "@/lib/india";
+import { splitPhone, toStoredPhone } from "@/lib/phone";
 import type { AddressForm, FieldErrors } from "@/lib/validation";
 
 const digits = (v: string, max: number) => v.replace(/\D/g, "").slice(0, max);
@@ -16,16 +19,22 @@ export function AddressFields({
   onChange: (patch: Partial<AddressForm>) => void;
   errors?: FieldErrors;
 }) {
+  const [iso, setIso] = useState(() => splitPhone(value.phone).iso);
+  useEffect(() => {
+    if (value.phone) setIso(splitPhone(value.phone).iso);
+  }, [value.phone]);
+  const national = value.phone ? splitPhone(value.phone).national : "";
+
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Full name" autoComplete="name" value={value.name} onChange={(e) => onChange({ name: e.target.value })} error={errors.name} />
-      <Field
-        label="Mobile number"
-        type="tel"
-        inputMode="numeric"
-        autoComplete="tel-national"
-        value={value.phone}
-        onChange={(e) => onChange({ phone: digits(e.target.value, 10) })}
+      <PhoneField
+        iso={iso}
+        national={national}
+        onChange={({ iso: nextIso, national: nextNational }) => {
+          setIso(nextIso);
+          onChange({ phone: nextNational ? toStoredPhone(nextIso, nextNational) : "" });
+        }}
         error={errors.phone}
         hint="For delivery updates"
       />

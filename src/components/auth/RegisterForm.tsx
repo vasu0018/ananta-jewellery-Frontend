@@ -8,9 +8,11 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Field, FormError, PasswordField } from "@/components/forms/Field";
+import { PhoneField } from "@/components/forms/PhoneField";
 import { useSettings } from "@/components/providers/SettingsProvider";
 import { ApiError, errorMessage } from "@/lib/api-error";
 import { register } from "@/lib/session";
+import { splitPhone, toStoredPhone } from "@/lib/phone";
 import { emailSchema, passwordSchema, phoneSchema, validate, type FieldErrors } from "@/lib/validation";
 import { useAuth } from "@/stores/auth";
 
@@ -26,6 +28,7 @@ export function RegisterForm({ next }: { next: string }) {
   const settings = useSettings();
   const status = useAuth((s) => s.status);
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
+  const [phoneIso, setPhoneIso] = useState("IN");
   const [marketing, setMarketing] = useState(true);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +40,7 @@ export function RegisterForm({ next }: { next: string }) {
   }, [status, busy, next, router]);
 
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = key === "phone" ? e.target.value.replace(/\D/g, "").slice(0, 10) : e.target.value;
+    const value = e.target.value;
     setForm((f) => ({ ...f, [key]: value }));
     setErrors(({ [key]: _, ...rest }) => rest);
   };
@@ -94,17 +97,19 @@ export function RegisterForm({ next }: { next: string }) {
       <FormError message={error} />
       <Field label="Full name" autoComplete="name" value={form.name} onChange={set("name")} error={errors.name} autoFocus />
       <Field label="Email" type="email" autoComplete="email" value={form.email} onChange={set("email")} error={errors.email} />
-      <Field
+      <PhoneField
         label={
           <>
             Mobile number <span className="font-normal text-muted">(optional)</span>
           </>
         }
-        type="tel"
-        inputMode="numeric"
-        autoComplete="tel-national"
-        value={form.phone}
-        onChange={set("phone")}
+        iso={phoneIso}
+        national={form.phone ? splitPhone(form.phone).national : ""}
+        onChange={({ iso, national }) => {
+          setPhoneIso(iso);
+          setForm((f) => ({ ...f, phone: national ? toStoredPhone(iso, national) : "" }));
+          setErrors(({ phone: _, ...rest }) => rest);
+        }}
         error={errors.phone}
         hint="Sign in with your number too"
       />

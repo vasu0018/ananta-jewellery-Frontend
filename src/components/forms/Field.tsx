@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { PointerSelect } from "@/components/ui/PointerSelect";
 import { cn } from "@/lib/utils";
 
 type BaseProps = { label: React.ReactNode; error?: string; hint?: React.ReactNode; className?: string };
@@ -35,9 +36,16 @@ export function SelectField({ label, error, hint, className, id, children, ...se
       <label htmlFor={fieldId} className="label">
         {label}
       </label>
-      <select id={fieldId} aria-invalid={!!error} aria-describedby={error ? `${fieldId}-err` : undefined} {...select} className="field">
+      <PointerSelect
+        id={fieldId}
+        aria-invalid={!!error}
+        value={select.value as string | number | readonly string[] | undefined}
+        disabled={select.disabled}
+        onChange={select.onChange as (e: { target: { value: string } }) => void}
+        className="field"
+      >
         {children}
-      </select>
+      </PointerSelect>
       <FieldMessage id={fieldId} error={error} hint={hint} />
     </div>
   );

@@ -20,7 +20,7 @@ function Group({ title, children, defaultOpen = true, count }: { title: string; 
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="border-b border-line py-4">
-      <button type="button" onClick={() => setOpen(!open)} className="flex w-full items-center justify-between text-left" aria-expanded={open}>
+      <button type="button" onClick={() => setOpen(!open)} className="-mx-1 flex w-[calc(100%+8px)] items-center justify-between rounded-[6px] px-1 py-1 text-left transition-colors hover:bg-[#ffe8ee]" aria-expanded={open}>
         <span className="text-[15px] font-bold text-ink">
           {title}
           {!!count && <span className="ml-2 rounded-full bg-rose px-1.5 py-0.5 text-[10px] text-white">{count}</span>}
@@ -34,7 +34,7 @@ function Group({ title, children, defaultOpen = true, count }: { title: string; 
 
 function CheckRow({ label, count, checked, onChange }: { label: React.ReactNode; count?: number; checked: boolean; onChange: () => void }) {
   return (
-    <label className="flex cursor-pointer items-center gap-3 py-1.5 text-[14px] text-ink-soft hover:text-ink">
+    <label className="-mx-2 flex cursor-pointer items-center gap-3 rounded-[6px] px-2 py-2 text-[14.5px] text-ink transition-colors hover:bg-[#ffe8ee]">
       <input type="checkbox" className="peer sr-only" checked={checked} onChange={onChange} />
       <span
         className={cn(

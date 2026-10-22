@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Lato } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
 import { SettingsProvider } from "@/components/providers/SettingsProvider";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
+import { StoreLine } from "@/components/home/StoreLine";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
@@ -16,14 +17,6 @@ import { getJsonSafe } from "@/lib/server-api";
 import { SITE_URL } from "@/lib/config";
 import { media } from "@/lib/utils";
 import type { Category, Collection } from "@/lib/types";
-
-const lato = Lato({
-  subsets: ["latin"],
-  weight: ["300", "400", "700", "900"],
-  style: ["normal", "italic"],
-  variable: "--font-lato",
-  display: "swap",
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   const { store, seo } = await getSettings();
@@ -94,8 +87,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   };
 
   return (
-    <html lang="en-IN" className={lato.variable}>
-      <body className="flex min-h-dvh flex-col">
+    <html lang="en-IN" suppressHydrationWarning>
+      <body className="flex min-h-dvh flex-col" suppressHydrationWarning>
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-white">
           Skip to content
         </a>
@@ -104,6 +97,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <Providers>
             {store.announcement && <AnnouncementBar text={store.announcement} />}
             <Header />
+            <Suspense fallback={null}>
+              <StoreLine />
+            </Suspense>
             <main id="main" className="flex-1">
               {children}
             </main>

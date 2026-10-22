@@ -36,7 +36,7 @@ export function MobileMenu({ nav, open, onOpenChange }: { nav: NavItem[]; open: 
             item.columns?.length ? (
               <Primitive.Item key={item.label} value={item.label} className="border-b border-line">
                 <Primitive.Header>
-                  <Primitive.Trigger className="group flex w-full items-center justify-between py-3.5 text-left text-[15px] font-medium text-ink">
+                  <Primitive.Trigger className="group -mx-2 flex w-[calc(100%+16px)] items-center justify-between rounded-[8px] px-2 py-3.5 text-left text-[15px] font-medium text-ink transition-colors hover:bg-[#ffe8ee]">
                     <span className={item.highlight ? "text-rose-dark" : undefined}>{item.label}</span>
                     <ChevronDown className="size-4 text-muted transition-transform group-data-[state=open]:rotate-180" />
                   </Primitive.Trigger>
@@ -55,7 +55,7 @@ export function MobileMenu({ nav, open, onOpenChange }: { nav: NavItem[]; open: 
                               key={l.href}
                               href={l.href}
                               onClick={close}
-                              className="rounded-full border border-line px-3 py-1.5 text-[13px] text-ink-soft"
+                              className="rounded-full border border-line px-3 py-1.5 text-[13px] text-ink-soft transition-colors hover:border-ink hover:bg-[#ffe8ee] hover:text-ink"
                             >
                               {l.label}
                             </Link>
@@ -71,23 +71,23 @@ export function MobileMenu({ nav, open, onOpenChange }: { nav: NavItem[]; open: 
                 key={item.label}
                 href={item.href}
                 onClick={close}
-                className={`block border-b border-line py-3.5 text-[15px] font-medium ${item.highlight ? "text-rose-dark" : "text-ink"}`}
+                className={`-mx-2 block rounded-[8px] border-b border-line px-2 py-3.5 text-[15px] font-medium transition-colors hover:bg-[#ffe8ee] ${item.highlight ? "text-rose-dark" : "text-ink"}`}
               >
                 {item.label}
               </Link>
             ),
           )}
           <div className="space-y-1 py-4 text-sm text-ink-soft">
-            <Link href="/wishlist" onClick={close} className="flex items-center gap-3 py-2">
+            <Link href="/wishlist" onClick={close} className="-mx-2 flex items-center gap-3 rounded-[8px] px-2 py-2 transition-colors hover:bg-[#ffe8ee]">
               <Heart className="size-4" /> Wishlist
             </Link>
-            <Link href="/track-order" onClick={close} className="flex items-center gap-3 py-2">
+            <Link href="/track-order" onClick={close} className="-mx-2 flex items-center gap-3 rounded-[8px] px-2 py-2 transition-colors hover:bg-[#ffe8ee]">
               <Package className="size-4" /> Track order
             </Link>
-            <Link href="/blog" onClick={close} className="flex items-center gap-3 py-2">
+            <Link href="/blog" onClick={close} className="-mx-2 flex items-center gap-3 rounded-[8px] px-2 py-2 transition-colors hover:bg-[#ffe8ee]">
               <span className="size-4 text-center font-display">✦</span> Journal
             </Link>
-            <a href={`tel:${settings.store.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 py-2">
+            <a href={`tel:${settings.store.phone.replace(/\s/g, "")}`} className="-mx-2 flex items-center gap-3 rounded-[8px] px-2 py-2 transition-colors hover:bg-[#ffe8ee]">
               <Phone className="size-4" /> {settings.store.phone}
             </a>
           </div>

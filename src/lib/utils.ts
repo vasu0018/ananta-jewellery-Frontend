@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { API_URL } from "./config";
+import { resolveApiUrl } from "./config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -10,12 +10,13 @@ export function cn(...inputs: ClassValue[]) {
 export function media(src: string | null | undefined): string | null {
   if (!src) return null;
   if (/^(https?:)?\/\//.test(src) || src.startsWith("data:") || src.startsWith("blob:")) return src;
-  return `${API_URL}${src.startsWith("/") ? "" : "/"}${src}`;
+  const origin = resolveApiUrl();
+  return `${origin}${src.startsWith("/") ? "" : "/"}${src}`;
 }
 
 /** Point uploaded images inside admin-authored HTML at the API origin. */
 export function resolveHtmlMedia(html: string) {
-  return html.replace(/(<img\b[^>]*?\ssrc=")(\/uploads\/)/gi, `$1${API_URL}$2`);
+  return html.replace(/(<img\b[^>]*?\ssrc=")(\/uploads\/)/gi, `$1${resolveApiUrl()}$2`);
 }
 
 /** Build a query string from a record, skipping empty values. */

@@ -1,8 +1,15 @@
 import { z } from "zod";
+import { storedPhoneError } from "./phone";
 
 /** Client-side mirrors of the API's validation, so shoppers see errors before submitting. */
 
-export const phoneSchema = z.string().trim().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number");
+export const phoneSchema = z
+  .string()
+  .trim()
+  .superRefine((value, ctx) => {
+    const message = storedPhoneError(value);
+    if (message) ctx.addIssue({ code: "custom", message });
+  });
 export const emailSchema = z.string().trim().toLowerCase().email("Enter a valid email address");
 export const passwordSchema = z.string().min(8, "Use at least 8 characters").max(100);
 export const pincodeSchema = z.string().trim().regex(/^\d{6}$/, "Enter a valid 6-digit pincode");

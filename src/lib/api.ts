@@ -1,11 +1,15 @@
 "use client";
 
-import { API_BASE } from "./config";
+import { resolveApiUrl } from "./config";
 import { ApiError, toApiError } from "./api-error";
 import { useAuth } from "@/stores/auth";
 import type { Customer } from "./types";
 
 export { ApiError };
+
+function apiBase() {
+  return `${resolveApiUrl()}/api/v1`;
+}
 
 type Options = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -20,7 +24,7 @@ let refreshing: Promise<string | null> | null = null;
  * request — the API rotates the cookie, so parallel refreshes would invalidate each other.
  */
 export function refreshSession(): Promise<string | null> {
-  refreshing ??= fetch(`${API_BASE}/auth/refresh`, { method: "POST", credentials: "include" })
+  refreshing ??= fetch(`${apiBase()}/auth/refresh`, { method: "POST", credentials: "include" })
     .then(async (res) => {
       if (!res.ok) return null;
       const data = (await res.json()) as { accessToken: string; customer: Customer };
@@ -39,7 +43,7 @@ async function send(path: string, opts: Options, token: string | null) {
   const headers: Record<string, string> = { Accept: "application/json" };
   if (opts.body !== undefined && !isForm) headers["Content-Type"] = "application/json";
   if (token) headers.Authorization = `Bearer ${token}`;
-  return fetch(`${API_BASE}${path}`, {
+  return fetch(`${apiBase()}${path}`, {
     method: opts.method ?? (opts.body !== undefined ? "POST" : "GET"),
     headers,
     body: opts.body === undefined ? undefined : isForm ? (opts.body as FormData) : JSON.stringify(opts.body),
@@ -75,10 +79,10 @@ export async function openAuthedFile(path: string) {
   const win = window.open("", "_blank");
   try {
     let token = useAuth.getState().accessToken;
-    let res = await fetch(`${API_BASE}${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : {}, credentials: "include" });
+    let res = await fetch(`${apiBase()}${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : {}, credentials: "include" });
     if (res.status === 401) {
       token = await refreshSession();
-      if (token) res = await fetch(`${API_BASE}${path}`, { headers: { Authorization: `Bearer ${token}` }, credentials: "include" });
+      if (token) res = await fetch(`${apiBase()}${path}`, { headers: { Authorization: `Bearer ${token}` }, credentials: "include" });
     }
     if (!res.ok) throw await toApiError(res);
     const url = URL.createObjectURL(await res.blob());

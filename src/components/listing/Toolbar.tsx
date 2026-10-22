@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
+import { PointerSelect } from "@/components/ui/PointerSelect";
 import { Sheet } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { FilterPanel, PRICE_BANDS, useFilterGroups } from "./FilterPanel";
@@ -18,18 +19,18 @@ function SortSelect({ id, className }: { id: string; className?: string }) {
   return (
     <label htmlFor={id} className={cn("relative flex items-center gap-1 text-[15px] text-ink", className)}>
       <span className="whitespace-nowrap text-[#121212a6]">Sort by:</span>
-      <select
+      <PointerSelect
         id={id}
         value={sort}
         onChange={(e) => set({ sort: e.target.value === "featured" ? null : e.target.value })}
-        className="cursor-pointer appearance-none bg-transparent pr-6 font-bold outline-none"
+        className="cursor-pointer bg-transparent pr-6 font-bold outline-none"
       >
         {SORT_OPTIONS.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}
           </option>
         ))}
-      </select>
+      </PointerSelect>
       <ChevronDown className="pointer-events-none absolute right-0 size-4" />
     </label>
   );
@@ -70,7 +71,7 @@ export function Toolbar({ total, facets, hide = [], title }: { total: number; fa
   if (params.get("rating")) chips.push({ key: "rating", label: `${params.get("rating")}★ & above`, onRemove: () => set({ rating: null }) });
   if (params.get("inStock")) chips.push({ key: "stock", label: "In stock", onRemove: () => set({ inStock: null }) });
 
-  const keep = ["q", "sort", ...hide, "bestseller", "newArrival", "gift", "flashSale"];
+  const keep = ["q", "sort", "store", ...hide, "bestseller", "newArrival", "gift", "flashSale"];
   const colours = values("colour");
 
   return (
@@ -123,7 +124,7 @@ export function Toolbar({ total, facets, hide = [], title }: { total: number; fa
                   onClick={() => setOpenId(open ? null : g.id)}
                   aria-expanded={open}
                   className={cn(
-                    "flex h-9 items-center gap-1 px-2.5 text-[15px] tracking-[0.3px] transition",
+                    "flex h-9 cursor-pointer items-center gap-1 rounded-[6px] px-2.5 text-[15px] tracking-[0.3px] transition-colors hover:bg-[#ffe8ee]",
                     open || g.count ? "text-ink" : "text-[#121212bf] hover:text-ink",
                   )}
                 >

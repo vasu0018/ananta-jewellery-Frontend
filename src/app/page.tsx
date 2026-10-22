@@ -9,7 +9,6 @@ import {
   NewLaunch,
   OfferHeader,
   PromoBanners,
-  StoreSwitcher,
   Title,
   TrustBadges,
   ViewMore,
@@ -72,11 +71,10 @@ export default async function HomePage() {
 
   return (
     <>
-      <StoreSwitcher />
       <HeroCarousel banners={banners.hero} />
 
       {home.categories.length > 0 && (
-        <section className="mx-auto w-full max-w-[1600px] px-4 pt-2 sm:px-6 lg:px-5 lg:pt-4">
+        <section className="container-x pt-2 lg:pt-4">
           <CategoryTiles categories={home.categories} offers={offers} />
         </section>
       )}

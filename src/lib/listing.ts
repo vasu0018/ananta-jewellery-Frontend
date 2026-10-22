@@ -6,7 +6,7 @@ export type SearchParams = Record<string, string | string[] | undefined>;
 export const LIST_KEYS = ["category", "material", "colour", "stone", "occasion", "gender", "size"] as const;
 export const LIST_SEP = "|";
 /** Single-value params passed straight through. */
-export const SCALAR_KEYS = ["q", "minPrice", "maxPrice", "rating", "inStock", "sort", "bestseller", "newArrival", "gift", "flashSale", "featured", "page"] as const;
+export const SCALAR_KEYS = ["q", "minPrice", "maxPrice", "rating", "inStock", "sort", "bestseller", "newArrival", "gift", "flashSale", "featured", "store", "page"] as const;
 
 export const SORT_OPTIONS = [
   { value: "featured", label: "Featured" },

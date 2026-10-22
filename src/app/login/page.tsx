@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const { next } = await searchParams;
   return (
-    <AuthShell title="Welcome back" subtitle="Sign in to your Ananta account.">
+    <AuthShell>
       <LoginForm next={safeNext(next)} />
     </AuthShell>
   );

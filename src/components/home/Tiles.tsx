@@ -7,7 +7,7 @@ import type { Category, Collection } from "@/lib/types";
 /** Round category thumbnails — scrolls sideways on mobile. */
 export function CategoryCircles({ categories }: { categories: Pick<Category, "id" | "name" | "slug" | "image">[] }) {
   return (
-    <div className="no-scrollbar -mx-4 flex gap-5 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 lg:mx-0 lg:justify-center-safe lg:gap-6 lg:px-0 xl:gap-8">
+    <div className="no-scrollbar -mx-4 flex gap-5 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 lg:mx-0 lg:gap-6 lg:px-0 xl:gap-8">
       {categories.map((c) => (
         <Link key={c.id} href={`/category/${c.slug}`} className="group flex w-[88px] shrink-0 flex-col items-center gap-3 sm:w-[110px]">
           <span className="relative size-[88px] overflow-hidden rounded-full bg-blush ring-1 ring-line transition group-hover:ring-2 group-hover:ring-rose sm:size-[110px]">

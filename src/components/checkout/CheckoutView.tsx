@@ -10,6 +10,7 @@ import { EmptyState, Skeleton, Spinner } from "@/components/ui/misc";
 import { Img } from "@/components/ui/Img";
 import { AddressFields } from "@/components/forms/AddressFields";
 import { Checkbox, Field, FormError, TextareaField } from "@/components/forms/Field";
+import { PhoneField } from "@/components/forms/PhoneField";
 import { CouponBox } from "@/components/cart/CouponBox";
 import { OrderSummary } from "@/components/cart/OrderSummary";
 import { useSettings } from "@/components/providers/SettingsProvider";
@@ -21,6 +22,7 @@ import { errorMessage, ApiError } from "@/lib/api-error";
 import { LAST_ORDER_KEY } from "@/lib/config";
 import { formatDay, inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { formatPhone, phoneError, toStoredPhone } from "@/lib/phone";
 import { addressSchema, EMPTY_ADDRESS, emailSchema, phoneSchema, validate, type AddressForm, type FieldErrors } from "@/lib/validation";
 import { useAuth } from "@/stores/auth";
 import { useCart, useCartHydrated } from "@/stores/cart";
@@ -89,6 +91,7 @@ export function CheckoutView() {
   // Contact (guests)
   const [email, setEmail] = useState("");
   const [quoteEmail, setQuoteEmail] = useState<string | undefined>();
+  const [phoneIso, setPhoneIso] = useState("IN");
   const [phone, setPhone] = useState("");
   const [marketing, setMarketing] = useState(true);
   const [contactErrors, setContactErrors] = useState<FieldErrors>({});
@@ -170,8 +173,16 @@ export function CheckoutView() {
         shippingAddress = { ...r.data, country: "India" };
       }
     }
-    const contactPhone = (authed ? customer.phone : phone.trim()) || shippingAddress?.phone || "";
-    if (!authed && !phoneSchema.safeParse(contactPhone).success) cErrors.phone = "Enter a valid 10-digit mobile number";
+    let contactPhone = "";
+    if (authed) contactPhone = customer.phone ?? "";
+    else if (phone) {
+      const message = phoneError(phoneIso, phone);
+      if (message) cErrors.phone = message;
+      else contactPhone = toStoredPhone(phoneIso, phone);
+    } else {
+      contactPhone = shippingAddress?.phone || "";
+      if (!phoneSchema.safeParse(contactPhone).success) cErrors.phone = phoneSchema.safeParse(contactPhone).error?.issues[0]?.message ?? "Enter your mobile number";
+    }
     setContactErrors(cErrors);
 
     if (Object.keys(cErrors).length || !shippingAddress) {
@@ -295,7 +306,7 @@ export function CheckoutView() {
                 <p className="font-medium text-ink">{customer.name}</p>
                 <p className="truncate text-muted">
                   {customer.email}
-                  {customer.phone ? ` · +91 ${customer.phone}` : ""}
+                  {customer.phone ? ` · ${formatPhone(customer.phone)}` : ""}
                 </p>
               </div>
             </div>
@@ -326,14 +337,12 @@ export function CheckoutView() {
                 error={contactErrors.email}
                 hint="Order confirmation and invoice are sent here"
               />
-              <Field
-                label="Mobile number"
-                type="tel"
-                inputMode="numeric"
-                autoComplete="tel-national"
-                value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value.replace(/\D/g, "").slice(0, 10));
+              <PhoneField
+                iso={phoneIso}
+                national={phone}
+                onChange={({ iso, national }) => {
+                  setPhoneIso(iso);
+                  setPhone(national);
                   setContactErrors(({ phone: _, ...rest }) => rest);
                 }}
                 error={contactErrors.phone}
@@ -368,7 +377,7 @@ export function CheckoutView() {
                         <br />
                         {a.city}, {a.state} {a.pincode}
                       </p>
-                      <p className="mt-1 text-xs text-muted">+91 {a.phone}</p>
+                      <p className="mt-1 text-xs text-muted">{formatPhone(a.phone)}</p>
                     </RadioCard>
                   ))}
                   <RadioCard name="address" checked={useNew} onSelect={() => setAddressChoice("new")}>
