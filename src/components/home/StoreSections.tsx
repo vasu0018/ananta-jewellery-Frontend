@@ -3,12 +3,6 @@ import { Img } from "@/components/ui/Img";
 import { ProductCard } from "@/components/product/ProductCard";
 import type { ProductCard as Product } from "@/lib/types";
 
-export function chunks<T>(items: T[], size: number) {
-  const out: T[][] = [];
-  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
-  return out;
-}
-
 /** Full-bleed campaign photo. Children sit on top of the image. */
 export function CampaignHero({ image, children, position = "object-[72%_center]" }: { image: string; children: React.ReactNode; position?: string }) {
   return (
@@ -47,30 +41,27 @@ export function ColourRow({ items }: { items: { name: string; href: string; imag
   );
 }
 
-/** Groups of three product photos, the way the gold store shows latest collections. */
+/** Photo row for the gold store. A short list sits centred under the title; a longer list fills the row. */
 export function LatestCollections({ products, href }: { products: Product[]; href: string }) {
-  const groups = chunks(products, 3);
-  if (!groups.length) return null;
+  const shown = products.slice(0, 6);
+  if (!shown.length) return null;
+  const few = shown.length <= 3;
   return (
     <section className="bg-[#faf7f2] py-10 sm:py-14">
       <div className="container-x">
         <SectionTitle title="Latest collections" />
-        <div className="flex gap-4 overflow-x-auto pb-2">
-          {groups.map((group, i) => (
-            <div key={i} className="grid w-[280px] shrink-0 grid-cols-3 gap-2 sm:w-[420px]">
-              {group.map((p) => (
-                <Link key={p.id} href={`/products/${p.slug}`} className="group">
-                  <span className="relative block aspect-[3/4] overflow-hidden rounded-[10px] bg-white">
-                    <Img src={p.image} alt={p.name} fill sizes="140px" className="object-cover transition duration-500 group-hover:scale-105" />
-                  </span>
-                  <span className="mt-1.5 line-clamp-2 block text-center text-[11px] text-ink sm:text-[12px]">{p.name}</span>
-                </Link>
-              ))}
-            </div>
+        <div className={few ? "mx-auto grid max-w-5xl grid-cols-3 gap-4 sm:gap-8" : "grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-6"}>
+          {shown.map((p) => (
+            <Link key={p.id} href={`/products/${p.slug}`} className="group">
+              <span className="relative block aspect-[3/4] overflow-hidden rounded-[12px] bg-white">
+                <Img src={p.image} alt={p.name} fill sizes="(min-width: 1024px) 280px, 33vw" className="object-cover transition duration-500 group-hover:scale-105" />
+              </span>
+              <span className="mt-2 line-clamp-2 block text-center text-[13px] leading-snug text-ink sm:text-[15px]">{p.name}</span>
+            </Link>
           ))}
         </div>
-        <div className="mt-6 text-center">
-          <Link href={href} className="inline-flex h-10 items-center rounded-full border border-ink px-8 text-[14px] text-ink hover:bg-ink hover:text-white">
+        <div className="mt-8 text-center">
+          <Link href={href} className="inline-flex h-11 items-center rounded-full border border-ink px-8 text-[14px] text-ink hover:bg-ink hover:text-white">
             View the collection
           </Link>
         </div>
